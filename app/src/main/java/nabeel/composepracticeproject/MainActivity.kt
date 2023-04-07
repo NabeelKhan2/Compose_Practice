@@ -5,20 +5,18 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.AlertDialog
 import androidx.compose.material.Text
-import androidx.compose.material.TextButton
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.changedToDown
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -28,6 +26,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import nabeel.composepracticeproject.ui.theme.ComposePracticeProjectTheme
 
 /*fun main() {
@@ -121,70 +121,24 @@ fun ListScreen(navController: NavHostController) {
     }
 }
 
-/*@Composable
-fun SlideToUnlockDialog(onUnlock: () -> Unit) {
-    var offsetX by remember { mutableStateOf(0f) }
-    var isUnlocked by remember { mutableStateOf(false) }
-
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .offset(x = offsetX.dp)
-            .background(Color.Black)
-            .pointerInput(Unit) {
-                detectDragGestures { change, dragAmount ->
-                    if (change.changedToDown()) {
-                        offsetX = 0f
-                        isUnlocked = false
-                    } else if (offsetX + dragAmount.x >= 0) {
-                        offsetX += dragAmount.x
-                    } else {
-                        offsetX = 0f
-                    }
-                    if (offsetX >= size.width * 0.7f) {
-                        isUnlocked = true
-                        onUnlock()
-                    }
-                }
-            }
-            .padding(20.dp)
-    ) {
-        Text(
-            text = "Slide to unlock",
-            fontSize = 24.sp,
-            color = Color.White,
-            modifier = Modifier.align(Alignment.Center)
-        )
-
-        if (isUnlocked) {
-            AlertDialog(
-                onDismissRequest = { isUnlocked = false },
-                title = { Text(text = "Dialog Title") },
-                text = { Text(text = "Dialog Content") },
-                confirmButton = {
-                    TextButton(
-                        onClick = {
-                            isUnlocked = false
-                            *//* do something on confirm button click *//*
-                        }
-                    ) {
-                        Text(text = "OK")
-                    }
-                }
-            )
-        }
-    }
-}*/
-
-@Preview(showBackground = true)
-@Composable
-fun MyPreview() {
-    SlideToUnlockDialog {
-
-    }
-}
-
 @Composable
 fun UnlockScreen() {
+    Box(modifier = Modifier.fillMaxSize()) {
+        val coroutineScope = rememberCoroutineScope()
+        val (isComplete, setIsComplete) = remember {
+            mutableStateOf(false)
+        }
 
+        SwipeButton(
+            modifier = Modifier.align(Alignment.Center),
+            text = "slide To unlock",
+            isComplete = isComplete,
+            onSwipe = {
+                coroutineScope.launch {
+                    delay(2000)
+                    setIsComplete(true)
+                }
+            },
+        )
+    }
 }
